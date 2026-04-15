@@ -1,54 +1,75 @@
 # g923mac
 
-Adds realistic force feedback to your Logitech G923 when playing Euro Truck Simulator 2 or American Truck Simulator on Mac. The G923's force feedback doesn't work natively on macOS - this plugin fixes that.
+Adds force feedback support for your Logitech G923 when playing games with CrossOver/Wine on macOS.
 
-## What it does
+The project contains:
 
-- **Realistic steering feel** - Self-centering force that changes with speed
-- **Road surface effects** - Feel bumps, curbs, and different road textures
-- **Vehicle dynamics** - Understeer/oversteer feedback helps you drive better
-- **Engine effects** - Heavy steering when engine is off, lighter with power steering
-- **LED dashboard** - RPM and speed indication on the wheel's LED strip
+- `G923Mac.app`: native macOS app that talks to the wheel over HID
+- `dinput8.dll`: Windows proxy loaded by the game under CrossOver/Wine, forwarding force feedback to `G923Mac.app`
 
 ## Requirements
 
-- **Hardware**: Logitech G923 steering wheel
-- **System**: macOS 10.15 or newer
-- **Games**: Euro Truck Simulator 2 or American Truck Simulator
+- Logitech G923 steering wheel
+- macOS
 
-## Installation
+## Use Prebuilt Releases
 
-### Option 1: Download Release (Easiest)
-1. Download the latest `libg923mac.dylib` from [Releases](https://github.com/ivonunes/g923mac/releases)
-2. Copy it to your game's plugins folder:
+Use this path if you just want to run it.
 
-**For American Truck Simulator:**
+1. Download `G923Mac.app` and `dinput8.dll` from the latest GitHub release for this repository.
+2. Copy `dinput8.dll` next to the game executable inside your CrossOver/Wine bottle.
+3. Launch `G923Mac.app` on macOS.
+4. Start your game through CrossOver/Wine.
+
+## Build From Source
+
+Use this path if you want to build your own binaries.
+
+### Build requirements
+
+- Xcode command line tools
+- CMake
+- `mingw-w64` for building the Windows DLL on macOS (`brew install mingw-w64`)
+
+### 1. Build the macOS app
+
 ```bash
-~/Library/Application Support/Steam/steamapps/common/American Truck Simulator/American Truck Simulator.app/Contents/MacOS/plugins/
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_MAC_APP=ON
+cmake --build build --target G923Mac
 ```
 
-**For Euro Truck Simulator 2:**
+Output:
+
 ```bash
-~/Library/Application Support/Steam/steamapps/common/Euro Truck Simulator 2/Euro Truck Simulator 2.app/Contents/MacOS/plugins/
+build/G923Mac.app
 ```
 
-3. Create the `plugins` folder if it doesn't exist
+### 2. Build the Windows `dinput8.dll` proxy
 
-### Option 2: Build from Source
 ```bash
-git clone https://github.com/ivonunes/g923mac
-cd g923mac
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j8
-# Then copy libg923mac.dylib to your game's plugins folder
+cmake -S . -B build-windows \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_MAC_APP=OFF \
+  -DBUILD_WINDOWS_PROXY=ON \
+  -DCMAKE_TOOLCHAIN_FILE=bridge/windows/toolchains/x86_64-w64-mingw32.cmake
+
+cmake --build build-windows --target g923mac_dinput8
 ```
 
-## Usage
+Output:
 
-1. **Connect your G923** to your Mac
-2. **Launch the game** (ETS2 or ATS)
-3. **Click OK** when you see the "Advanced SDK features" popup
-4. **Look for the test** - Your wheel's LEDs should flash and the wheel should briefly turn then center
+```bash
+build-windows/dinput8.dll
+```
 
-If it works, you're all set!
+### Use local builds with CrossOver / Wine
+
+1. Copy `build-windows/dinput8.dll` next to the game executable inside your CrossOver/Wine bottle.
+2. Launch `build/G923Mac.app` on macOS.
+3. Start your game through CrossOver/Wine.
+
+## Optional Proxy Log
+
+The Windows proxy appends logs to `g923mac_proxy.log` in the same folder as `dinput8.dll`, but only if that file already exists.
+
+If you want logs, create an empty `g923mac_proxy.log` file first.

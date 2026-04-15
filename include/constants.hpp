@@ -19,4 +19,4 @@ static constexpr std::uint8_t LED_PATTERN_3 = 0x07;
 static constexpr std::uint8_t LED_PATTERN_4 = 0x0F;
 static constexpr std::uint8_t LED_PATTERN_5 = 0x1F;
 
-static constexpr const char* VERSION = "0.1.0";
+static constexpr const char* VERSION = "1.0.0";

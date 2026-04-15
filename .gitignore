@@ -1,4 +1,19 @@
 .DS_Store
-.idea
-/build
-/cmake-build-*
+.idea/
+
+# Build output directories
+/build/
+/build-windows/
+/cmake-build-*/
+
+# In-source CMake/Ninja artifacts
+/CMakeCache.txt
+/CMakeFiles/
+/cmake_install.cmake
+/Makefile
+/compile_commands.json
+
+# Local runtime/debug logs
+/log.txt
+/g923mac_proxy.log
+/g923ffb_proxy.log
