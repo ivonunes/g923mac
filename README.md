@@ -68,6 +68,10 @@ build-windows/dinput8.dll
 2. Launch `build/G923Mac.app` on macOS.
 3. Start your game through CrossOver/Wine.
 
+## Wine / CrossOver DLL Override
+
+If the proxy is not being loaded, open `winecfg` for the bottle and add a DLL override for `dinput8` as `native, builtin`.
+
 ## Optional Proxy Log
 
 The Windows proxy appends logs to `g923mac_proxy.log` in the same folder as `dinput8.dll`, but only if that file already exists.
